@@ -172,25 +172,9 @@ public class TeaVMInput implements Input, EventListener {
         return justPressedKeys[key];
     }
 
-    /*public void getTextInput(TextInputListener listener, String title, String text, String hint) {
-        TextInputDialogBox dialog = new TextInputDialogBox(title, text, hint);
-        final TextInputListener capturedListener = listener;
-        dialog.setListener(new TextInputDialogListener() {
-            @Override
-            public void onPositive(String text) {
-                if (capturedListener != null) {
-                    capturedListener.input(text);
-                }
-            }
-
-            @Override
-            public void onNegative() {
-                if (capturedListener != null) {
-                    capturedListener.canceled();
-                }
-            }
-        });
-    }*/
+    @Override
+    public void getTextInput(TextInputListener listener, String title, String text, String hint) {
+    }
 
     @Override
     public void setOnscreenKeyboardVisible(boolean visible) {
@@ -910,7 +894,4 @@ public class TeaVMInput implements Input, EventListener {
     private static final int KEY_CLOSE_BRACKET = 221;
     private static final int KEY_SINGLE_QUOTE = 222;
 
-    @Override
-    public void getTextInput(TextInputListener listener, String title, String text, String hint) {
-    }
 }

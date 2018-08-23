@@ -26,7 +26,7 @@ public class TeaVMApplication implements Application {
     private int logLevel = LOG_ERROR;
     private Array<Runnable> runnables = new Array<>();
     private Array<LifecycleListener> lifecycleListeners = new Array<>();
-    private ObjectMap<String, Preferences> prefs = new ObjectMap<String, Preferences>();
+    private ObjectMap<String, Preferences> prefs = new ObjectMap<>();
     private ApplicationLogger logger;
     private int lastWidth = -1, lastHeight = 1;
 
@@ -184,13 +184,11 @@ public class TeaVMApplication implements Application {
 
     @Override
     public long getJavaHeap() {
-        // TODO Auto-generated method stub
         return 0;
     }
 
     @Override
     public long getNativeHeap() {
-        // TODO Auto-generated method stub
         return 0;
     }
 

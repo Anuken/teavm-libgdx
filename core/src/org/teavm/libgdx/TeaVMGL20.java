@@ -18,6 +18,8 @@ package org.teavm.libgdx;
 import java.nio.*;
 import java.util.HashMap;
 import java.util.Map;
+
+import com.badlogic.gdx.utils.IntMap;
 import org.teavm.jso.browser.Window;
 import org.teavm.jso.typedarrays.*;
 import org.teavm.jso.webgl.*;
@@ -31,26 +33,25 @@ import com.badlogic.gdx.utils.GdxRuntimeException;
  */
 public class TeaVMGL20 implements GL20 {
     private static final Window window = Window.current();
-    final Map<Integer, WebGLProgram> programs = new HashMap<>();
+    final IntMap<WebGLProgram> programs = new IntMap<>();
     int nextProgramId = 1;
-    final Map<Integer, WebGLShader> shaders = new HashMap<>();
+    final IntMap<WebGLShader> shaders = new IntMap<>();
     int nextShaderId = 1;
-    final Map<Integer, WebGLBuffer> buffers = new HashMap<>();
+    final IntMap<WebGLBuffer> buffers = new IntMap<>();
     int nextBufferId = 1;
-    final Map<Integer, WebGLFramebuffer> frameBuffers = new HashMap<>();
+    final IntMap<WebGLFramebuffer> frameBuffers = new IntMap<>();
     int nextFrameBufferId = 1;
-    final Map<Integer, WebGLRenderbuffer> renderBuffers = new HashMap<>();
+    final IntMap<WebGLRenderbuffer> renderBuffers = new IntMap<>();
     int nextRenderBufferId = 1;
-    final Map<Integer, WebGLTexture> textures = new HashMap<>();
+    final IntMap<WebGLTexture> textures = new IntMap<>();
     int nextTextureId = 1;
-    final Map<Integer, Map<Integer, WebGLUniformLocation>> uniforms = new HashMap<>();
+    final IntMap<IntMap<WebGLUniformLocation>> uniforms = new IntMap<>();
     int nextUniformId = 1;
     int currProgram = 0;
 
     Float32Array floatBuffer = Float32Array.create(2000 * 20);
     Int32Array intBuffer = Int32Array.create(2000 * 6);
     Int16Array shortBuffer = Int16Array.create(2000 * 6);
-    float[] floatArray = new float[16000];
 
     final WebGLRenderingContext gl;
 
@@ -181,9 +182,9 @@ public class TeaVMGL20 implements GL20 {
     }
 
     private int allocateUniformLocationId(int program, WebGLUniformLocation location) {
-        Map<Integer, WebGLUniformLocation> progUniforms = uniforms.get(program);
+        IntMap<WebGLUniformLocation> progUniforms = uniforms.get(program);
         if (progUniforms == null) {
-            progUniforms = new HashMap<>();
+            progUniforms = new IntMap<>();
             uniforms.put(program, progUniforms);
         }
         // FIXME check if uniform already stored.
