@@ -21,7 +21,7 @@ import com.fasterxml.jackson.databind.SequenceWriter;
 import java.io.*;
 import java.net.URISyntaxException;
 import java.net.URL;
-import java.util.Enumeration;
+import java.util.Arrays;
 import java.util.HashSet;
 import java.util.Set;
 import org.apache.commons.io.IOUtils;
@@ -37,6 +37,16 @@ public class AssetsCopier implements RendererListener {
     private FileDescriptor rootFileDescriptor = new FileDescriptor();
     private ObjectMapper mapper = new ObjectMapper();
     private ObjectWriter writer = mapper.writerFor(FileDescriptor.class);
+    private String[] classpathAssets = {
+        "com/badlogic/gdx/graphics/g3d/particles/particles.fragment.glsl",
+        "com/badlogic/gdx/graphics/g3d/particles/particles.vertex.glsl",
+        "com/badlogic/gdx/graphics/g3d/shaders/default.fragment.glsl",
+        "com/badlogic/gdx/graphics/g3d/shaders/default.vertex.glsl",
+        "com/badlogic/gdx/graphics/g3d/shaders/depth.fragment.glsl",
+        "com/badlogic/gdx/graphics/g3d/shaders/depth.vertex.glsl",
+        "com/badlogic/gdx/utils/arial-15.fnt",
+        "com/badlogic/gdx/utils/arial-15.png"
+    };
 
     @Override
     public void begin(RenderingManager context, BuildTarget buildTarget) throws IOException {
@@ -57,28 +67,8 @@ public class AssetsCopier implements RendererListener {
     }
 
     private void copyClasspathAssets(File dir) throws IOException {
-        Enumeration<URL> resources = context.getClassLoader().getResources("META-INF/teavm-libgdx/classpath-assets");
         Set<String> resourcesToCopy = new HashSet<>();
-        while (resources.hasMoreElements()) {
-            URL resource = resources.nextElement();
-            InputStream input = resource.openStream();
-            if (input == null) {
-                continue;
-            }
-            try (BufferedReader reader = new BufferedReader(new InputStreamReader(input, "UTF-8"))) {
-                while (true) {
-                    String line = reader.readLine();
-                    if (line == null) {
-                        break;
-                    }
-                    line = line.trim();
-                    if (line.isEmpty() || line.startsWith("#")) {
-                        continue;
-                    }
-                    resourcesToCopy.add(line);
-                }
-            }
-        }
+        resourcesToCopy.addAll(Arrays.asList(classpathAssets));
 
         for (String resourceToCopy : resourcesToCopy) {
             File resource = new File(dir, resourceToCopy);
