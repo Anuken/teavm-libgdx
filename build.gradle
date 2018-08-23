@@ -1,5 +1,4 @@
 apply plugin: 'java'
-apply plugin: 'eclipse'
 apply plugin: 'maven'
 
 sourceCompatibility = 1.8
@@ -8,15 +7,15 @@ group = 'com.github.Anuken'
 
 repositories {
     mavenCentral()
- 	maven { 
- 		url "https://oss.sonatype.org/content/repositories/snapshots/"
- 	}
+    maven {
+        url "https://dl.bintray.com/konsoletyper/teavm"
+    }
     jcenter()
 }
 
 ext {
 	gdxVersion = '1.9.8'
-    teavmVersion = '0.5.1'
+    teavmVersion = '0.6.0-dev-529'
     jacksonVersion = '2.5.0'
 }
 
