@@ -6,8 +6,6 @@ sourceCompatibility = 1.8
 version = '1.0'
 group = 'com.github.Anuken'
 
-sourceSets.main.java.srcDirs = [ "core/src/" ]
-
 repositories {
     mavenCentral()
  	maven { 
@@ -20,6 +18,17 @@ ext {
 	gdxVersion = '1.9.8'
     teavmVersion = '0.5.1'
     jacksonVersion = '2.5.0'
+}
+
+sourceSets {
+    main {
+        java {
+            srcDirs = [ "core/src/" ]
+        }
+        resources {
+            srcDir 'core/src/resources'
+        }
+    }
 }
 
 task sourcesJar(type: Jar, dependsOn: classes) {
