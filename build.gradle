@@ -1,0 +1,44 @@
+apply plugin: 'java'
+apply plugin: 'eclipse'
+apply plugin: 'maven'
+
+sourceCompatibility = 1.8
+version = '1.0'
+group = 'com.github.Anuken'
+
+sourceSets.main.java.srcDirs = [ "core/src/" ]
+
+repositories {
+    mavenCentral()
+ 	maven { 
+ 		url "https://oss.sonatype.org/content/repositories/snapshots/"
+ 	}
+    jcenter()
+}
+
+ext {
+	gdxVersion = '1.9.8'
+    teavmVersion = '0.5.1'
+    jacksonVersion = '2.5.0'
+}
+
+task sourcesJar(type: Jar, dependsOn: classes) {
+    classifier = 'sources'
+    from sourceSets.main.allSource
+}
+
+artifacts {
+    archives sourcesJar
+}
+
+dependencies {
+	compile "com.badlogicgames.gdx:gdx:$gdxVersion"
+    compile "org.teavm:teavm-core:$teavmVersion"
+    compile "org.teavm:teavm-classlib:$teavmVersion"
+    compile "org.teavm:teavm-jso:$teavmVersion"
+    compile "org.teavm:teavm-jso-apis:$teavmVersion"
+    compile "org.teavm:teavm-jso-impl:$teavmVersion"
+    compile "com.fasterxml.jackson.core:jackson-core:$jacksonVersion"
+    compile "com.fasterxml.jackson.core:jackson-annotations:$jacksonVersion"
+    compile "com.fasterxml.jackson.core:jackson-databind:$jacksonVersion"
+}

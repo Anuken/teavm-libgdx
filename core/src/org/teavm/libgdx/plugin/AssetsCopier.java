@@ -30,7 +30,6 @@ import org.teavm.vm.BuildTarget;
 import org.teavm.vm.spi.RendererListener;
 
 /**
- *
  * @author Alexey Andreev
  */
 public class AssetsCopier implements RendererListener {

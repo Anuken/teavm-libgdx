@@ -145,8 +145,4 @@ public class TeaVMSound implements Sound {
             music.setPan(pan, volume);
         }
     }
-
-    @Override
-    public void setPriority(long soundId, int priority) {
-    }
 }

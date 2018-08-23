@@ -15,9 +15,15 @@
  */
 package org.teavm.libgdx;
 
+import com.badlogic.gdx.Application;
+import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Graphics;
+import com.badlogic.gdx.graphics.Cursor;
+import com.badlogic.gdx.graphics.Cursor.SystemCursor;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.GL30;
+import com.badlogic.gdx.graphics.Pixmap;
+import com.badlogic.gdx.graphics.glutils.GLVersion;
 import org.teavm.jso.browser.Screen;
 import org.teavm.jso.browser.Window;
 import org.teavm.jso.core.JSArrayReader;
@@ -40,7 +46,8 @@ public class TeaVMGraphics implements Graphics {
     long time;
     int frames;
     float fps;
-    private TeaVMGL20 gl20;
+    private GL20 gl20;
+    private GLVersion glVersion;
 
     public TeaVMGraphics(HTMLCanvasElement element, TeaVMApplicationConfig config) {
         this.element = element;
@@ -56,6 +63,102 @@ public class TeaVMGraphics implements Graphics {
         context = (WebGLRenderingContext)element.getContext("webgl");
         context.viewport(0, 0, element.getWidth(), element.getHeight());
         gl20 = new TeaVMGL20(context);
+
+        String versionString = gl20.glGetString(GL20.GL_VERSION);
+        String vendorString = gl20.glGetString(GL20.GL_VENDOR);
+        String rendererString = gl20.glGetString(GL20.GL_RENDERER);
+        glVersion = new GLVersion(Application.ApplicationType.WebGL, versionString, vendorString, rendererString);
+    }
+
+    @Override
+    public void setGL20(GL20 gl20) {
+        this.gl20 = gl20;
+        Gdx.gl = gl20;
+        Gdx.gl20 = gl20;
+    }
+
+    @Override
+    public void setGL30(GL30 gl30) {
+    }
+
+    @Override
+    public int getBackBufferWidth() {
+        return getWidth();
+    }
+
+    @Override
+    public int getBackBufferHeight() {
+        return getHeight();
+    }
+
+    @Override
+    public GLVersion getGLVersion() {
+        return glVersion;
+    }
+
+    @Override
+    public Monitor getPrimaryMonitor() {
+        return getMonitor();
+    }
+
+    @Override
+    public Monitor getMonitor() {
+        return new TeaVMMonitor(0, 0, "Primary Monitor");
+    }
+
+    @Override
+    public Monitor[] getMonitors() {
+        return new Monitor[]{getPrimaryMonitor()};
+    }
+
+    @Override
+    public DisplayMode[] getDisplayModes(Monitor monitor) {
+        return getDisplayModes();
+    }
+
+    @Override
+    public DisplayMode getDisplayMode() {
+        return getDisplayModes()[0];
+    }
+
+    @Override
+    public DisplayMode getDisplayMode(Monitor monitor) {
+        return getDisplayMode();
+    }
+
+    @Override
+    public boolean setFullscreenMode(DisplayMode displayMode) {
+        return false;
+    }
+
+    @Override
+    public boolean setWindowedMode(int width, int height) {
+        return false;
+    }
+
+    @Override
+    public void setUndecorated(boolean undecorated) {
+
+    }
+
+    @Override
+    public void setResizable(boolean resizable) {
+
+    }
+
+    @Override
+    public Cursor newCursor(Pixmap pixmap, int xHotspot, int yHotspot) {
+        return () -> {};
+    }
+
+    @Override
+    public void setCursor(Cursor cursor) {
+        //TODO not implemented
+    }
+
+    @Override
+    public void setSystemCursor(SystemCursor systemCursor) {
+        //TODO not implemented
     }
 
     @Override
@@ -146,21 +249,6 @@ public class TeaVMGraphics implements Graphics {
     }
 
     @Override
-    public DisplayMode getDesktopDisplayMode() {
-        return getDisplayModes()[0];
-    }
-
-    @Override
-    public boolean setDisplayMode(DisplayMode displayMode) {
-        return false;
-    }
-
-    @Override
-    public boolean setDisplayMode(int width, int height, boolean fullscreen) {
-        return false;
-    }
-
-    @Override
     public void setTitle(String title) {
     }
 
@@ -212,6 +300,12 @@ public class TeaVMGraphics implements Graphics {
             this.fps = frames;
             time = 0;
             frames = 0;
+        }
+    }
+
+    static class TeaVMMonitor extends Monitor {
+        protected TeaVMMonitor (int virtualX, int virtualY, String name) {
+            super(virtualX, virtualY, name);
         }
     }
 }

@@ -45,6 +45,11 @@ public class IndexArrayEmulator implements IndexData {
         usage = GL20.GL_STATIC_DRAW;
     }
 
+    @Override
+    public void updateIndices(int targetOffset, short[] indices, int offset, int count) {
+
+    }
+
     /** @return the number of indices currently stored in this buffer */
     @Override
     public int getNumIndices() {

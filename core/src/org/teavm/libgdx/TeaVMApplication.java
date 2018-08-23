@@ -2,20 +2,13 @@ package org.teavm.libgdx;
 
 import java.util.ArrayList;
 import java.util.List;
+
+import com.badlogic.gdx.*;
+import com.badlogic.gdx.utils.Array;
 import org.teavm.jso.browser.TimerHandler;
 import org.teavm.jso.browser.Window;
 import org.teavm.jso.dom.html.HTMLCanvasElement;
 import org.teavm.jso.JSBody;
-import com.badlogic.gdx.Application;
-import com.badlogic.gdx.ApplicationListener;
-import com.badlogic.gdx.Audio;
-import com.badlogic.gdx.Files;
-import com.badlogic.gdx.Gdx;
-import com.badlogic.gdx.Graphics;
-import com.badlogic.gdx.Input;
-import com.badlogic.gdx.LifecycleListener;
-import com.badlogic.gdx.Net;
-import com.badlogic.gdx.Preferences;
 import com.badlogic.gdx.utils.Clipboard;
 
 public class TeaVMApplication implements Application {
@@ -27,8 +20,13 @@ public class TeaVMApplication implements Application {
     private TeaVMFiles files;
     private TeaVMAudio audio;
     private TeaVMInput input;
+    private TeaVMNet net;
+    private TeaVMClipboard clipboard;
     private int logLevel = LOG_ERROR;
+    private Array<Runnable> runnables = new Array<>();
     private List<LifecycleListener> lifecycleListeners = new ArrayList<>();
+    private ApplicationLogger logger;
+    private int lastWidth = -1, lastHeight = 1;
 
     public TeaVMApplication(ApplicationListener listener, TeaVMApplicationConfig config) {
         this.listener = listener;
@@ -53,11 +51,15 @@ public class TeaVMApplication implements Application {
         files = new TeaVMFiles();
         audio = new TeaVMAudio();
         input = new TeaVMInput(canvas);
+        net = new TeaVMNet();
+        logger = new TeaVMApplicationLogger();
+        clipboard = new TeaVMClipboard();
         Gdx.app = this;
         Gdx.graphics = graphics;
         Gdx.gl = graphics.getGL20();
         Gdx.gl20 = graphics.getGL20();
         Gdx.files = files;
+        Gdx.net = net;
         Gdx.audio = audio;
         Gdx.input = input;
         listener.create();
@@ -72,7 +74,17 @@ public class TeaVMApplication implements Application {
     private void step() {
         graphics.update();
         graphics.frameId++;
-        listener.resize(canvas.getWidth(), canvas.getHeight());
+
+        for (Runnable runnable : runnables) {
+            runnable.run();
+        }
+
+        runnables.clear();
+        if(lastWidth != canvas.getWidth() || lastHeight != canvas.getHeight()) {
+            listener.resize(canvas.getWidth(), canvas.getHeight());
+            lastWidth = canvas.getWidth();
+            lastHeight = canvas.getHeight();
+        }
         listener.render();
         input.reset();
         delayedStep();
@@ -110,45 +122,43 @@ public class TeaVMApplication implements Application {
     }
 
     @Override
+    public void setApplicationLogger(ApplicationLogger applicationLogger) {
+        this.logger = logger;
+    }
+
+    @Override
+    public ApplicationLogger getApplicationLogger() {
+        return logger;
+    }
+
+    @Override
     public void log(String tag, String message) {
-        if (logLevel > LOG_INFO) {
-            consoleLog("Info " + tag + ": " + message);
-        }
+        if (logLevel > LOG_INFO) logger.log(tag, message);
     }
 
     @Override
     public void log(String tag, String message, Throwable exception) {
-        if (logLevel > LOG_INFO) {
-            consoleLog("Info " + tag + ": " + message);
-        }
+        if (logLevel > LOG_INFO) logger.log(tag, message, exception);
     }
 
     @Override
     public void error(String tag, String message) {
-        if (logLevel > LOG_ERROR) {
-            consoleLog("Error " + tag + ": " + message);
-        }
+        if (logLevel > LOG_ERROR) logger.error(tag, message);
     }
 
     @Override
     public void error(String tag, String message, Throwable exception) {
-        if (logLevel > LOG_ERROR) {
-            consoleLog("Error " + tag + ": " + message);
-        }
+        if (logLevel > LOG_ERROR) logger.error(tag, message, exception);
     }
 
     @Override
     public void debug(String tag, String message) {
-        if (logLevel >= LOG_DEBUG) {
-            consoleLog("Debug " + tag + ": " + message);
-        }
+        if (logLevel >= LOG_DEBUG) logger.debug(tag, message);
     }
 
     @Override
     public void debug(String tag, String message, Throwable exception) {
-        if (logLevel > LOG_DEBUG) {
-            consoleLog("Debug " + tag + ": " + message);
-        }
+        if (logLevel > LOG_DEBUG) logger.debug(tag, message, exception);
     }
 
     @Override
@@ -185,20 +195,17 @@ public class TeaVMApplication implements Application {
 
     @Override
     public Preferences getPreferences(String name) {
-        // TODO Auto-generated method stub
         return null;
     }
 
     @Override
     public Clipboard getClipboard() {
-        // TODO Auto-generated method stub
-        return null;
+        return clipboard;
     }
 
     @Override
     public void postRunnable(Runnable runnable) {
-        // TODO Auto-generated method stub
-
+        runnables.add(runnable);
     }
 
     @Override
@@ -215,6 +222,4 @@ public class TeaVMApplication implements Application {
         lifecycleListeners.remove(listener);
     }
 
-    @JSBody(params = "message", script = "console.log(\"TeaVM: \" + message);")
-    native static public void consoleLog(String message);
 }
