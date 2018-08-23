@@ -3,12 +3,15 @@ package org.teavm.libgdx;
 import com.badlogic.gdx.Files;
 import com.badlogic.gdx.files.FileHandle;
 import com.badlogic.gdx.utils.GdxRuntimeException;
+import org.teavm.jso.browser.Storage;
 
 /**
  *
  * @author Alexey Andreev
  */
 public class TeaVMFiles implements Files {
+    public static final Storage localStorage = Storage.getLocalStorage();
+
     @Override
     public FileHandle getFileHandle(String path, FileType type) {
         if (type != FileType.Internal) {

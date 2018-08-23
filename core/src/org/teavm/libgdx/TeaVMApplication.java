@@ -5,6 +5,7 @@ import java.util.List;
 
 import com.badlogic.gdx.*;
 import com.badlogic.gdx.utils.Array;
+import com.badlogic.gdx.utils.ObjectMap;
 import org.teavm.jso.browser.TimerHandler;
 import org.teavm.jso.browser.Window;
 import org.teavm.jso.dom.html.HTMLCanvasElement;
@@ -24,7 +25,8 @@ public class TeaVMApplication implements Application {
     private TeaVMClipboard clipboard;
     private int logLevel = LOG_ERROR;
     private Array<Runnable> runnables = new Array<>();
-    private List<LifecycleListener> lifecycleListeners = new ArrayList<>();
+    private Array<LifecycleListener> lifecycleListeners = new Array<>();
+    private ObjectMap<String, Preferences> prefs = new ObjectMap<String, Preferences>();
     private ApplicationLogger logger;
     private int lastWidth = -1, lastHeight = 1;
 
@@ -117,8 +119,7 @@ public class TeaVMApplication implements Application {
 
     @Override
     public Net getNet() {
-        // TODO Auto-generated method stub
-        return null;
+        return net;
     }
 
     @Override
@@ -194,8 +195,13 @@ public class TeaVMApplication implements Application {
     }
 
     @Override
-    public Preferences getPreferences(String name) {
-        return null;
+    public Preferences getPreferences (String name) {
+        Preferences pref = prefs.get(name);
+        if (pref == null) {
+            pref = new TeaVMPreferences(name);
+            prefs.put(name, pref);
+        }
+        return pref;
     }
 
     @Override
@@ -219,7 +225,7 @@ public class TeaVMApplication implements Application {
 
     @Override
     public void removeLifecycleListener(LifecycleListener listener) {
-        lifecycleListeners.remove(listener);
+        lifecycleListeners.removeValue(listener, true);
     }
 
 }
