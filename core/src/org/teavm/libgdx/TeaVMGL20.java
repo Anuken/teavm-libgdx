@@ -546,7 +546,7 @@ public class TeaVMGL20 implements GL20 {
     public void glTexSubImage2D(int target, int level, int xoffset, int yoffset, int width, int height, int format,
             int type, Buffer pixels) {
         if (pixels instanceof ByteBuffer) {
-            gl.texSubImage2D(target, level, xoffset, yoffset, width, height, format, type, copy((ByteBuffer)pixels));
+            gl.texSubImage2D(target, level, xoffset, yoffset, width, height, format, type, copyU((ByteBuffer)pixels));
         } else if (pixels instanceof ShortBuffer) {
             gl.texImage2D(target, level, xoffset, yoffset, width, height, format, type, copy((ShortBuffer)pixels));
         } else if (pixels instanceof IntBuffer) {

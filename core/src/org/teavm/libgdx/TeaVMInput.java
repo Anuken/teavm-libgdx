@@ -280,12 +280,12 @@ public class TeaVMInput implements Input, EventListener {
 
     private float getMovementXJSNI(Event event) {
         // TODO: implement
-        return 0;
+        return ((MouseEvent)event).getScreenX();
     }
 
     private float getMovementYJSNI(Event event) {
         // TODO: implement
-        return 0;
+        return ((MouseEvent)event).getScreenY();
     }
 
     private static boolean isTouchScreen() {
@@ -328,38 +328,22 @@ public class TeaVMInput implements Input, EventListener {
 
     /** Kindly borrowed from PlayN. **/
     protected int getRelativeX(MouseEvent e, HTMLCanvasElement target) {
-        float xScaleRatio = target.getWidth() * 1f / target.getClientWidth();
-        return Math.round(xScaleRatio *
-                (e.getClientX() - target.getAbsoluteLeft() + target.getScrollLeft() + target.getOwnerDocument()
-                        .getScrollLeft()));
+        //float xScaleRatio = target.getWidth() * 1f / target.getClientWidth();
+        return e.getClientX();
+        //Math.round(xScaleRatio *
+                //(e.getClientX() - target.getAbsoluteLeft() + target.getScrollLeft() + target.getOwnerDocument()
+                 //       .getScrollLeft()));
     }
 
     /** Kindly borrowed from PlayN. **/
     protected int getRelativeY(MouseEvent e, HTMLCanvasElement target) {
-        float yScaleRatio = target.getHeight() * 1f / target.getClientHeight();
-        return Math.round(yScaleRatio *
-                (e.getClientY() - target.getAbsoluteTop() + target.getScrollTop() + target.getOwnerDocument()
-                        .getScrollTop()));
-    }
-/*
-    protected int getRelativeX(Touch touch, HTMLCanvasElement target) {
-        float xScaleRatio = target.getWidth() * 1f / target.getClientWidth(); // Correct
-                                                                              // for
-                                                                              // canvas
-                                                                              // CSS
-                                                                              // scaling
-        return Math.round(xScaleRatio * touch.getRelativeX(target));
+        //float yScaleRatio = target.getHeight() * 1f / target.getClientHeight();
+        return e.getClientY();
+        //Math.round(yScaleRatio *
+                //(e.getClientY() - target.getAbsoluteTop() + target.getScrollTop() + target.getOwnerDocument()
+                     //   .getScrollTop()));
     }
 
-    protected int getRelativeY(Touch touch, CanvasElement target) {
-        float yScaleRatio = target.getHeight() * 1f / target.getClientHeight(); // Correct
-                                                                                // for
-                                                                                // canvas
-                                                                                // CSS
-                                                                                // scaling
-        return Math.round(yScaleRatio * touch.getRelativeY(target));
-    }
-*/
     private void hookEvents() {
         HTMLDocument document = canvas.getOwnerDocument();
         canvas.addEventListener("mousedown", this, true);
@@ -377,7 +361,6 @@ public class TeaVMInput implements Input, EventListener {
         canvas.addEventListener("touchmove", this);
         canvas.addEventListener("touchcancel", this);
         canvas.addEventListener("touchend", this);
-
     }
 
     private int getButton(int button) {
