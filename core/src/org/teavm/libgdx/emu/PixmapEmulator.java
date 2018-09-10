@@ -35,11 +35,13 @@ import org.teavm.jso.typedarrays.ArrayBuffer;
 import org.teavm.jso.typedarrays.Uint8ClampedArray;
 import org.teavm.backend.javascript.spi.GeneratedBy;
 import org.teavm.libgdx.TeaVMFileHandle;
+import org.teavm.libgdx.plugin.Annotations.Replace;
 
 /**
  *
  * @author Alexey Andreev
  */
+@Replace(Pixmap.class)
 public class PixmapEmulator implements Disposable {
     private static final Window window = Window.current();
     private static final HTMLDocument document = window.getDocument();

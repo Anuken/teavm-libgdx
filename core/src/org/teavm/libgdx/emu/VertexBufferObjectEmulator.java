@@ -1,19 +1,20 @@
 package org.teavm.libgdx.emu;
 
-import java.nio.FloatBuffer;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.VertexAttribute;
 import com.badlogic.gdx.graphics.VertexAttributes;
 import com.badlogic.gdx.graphics.VertexAttributes.Usage;
 import com.badlogic.gdx.graphics.glutils.ShaderProgram;
-import com.badlogic.gdx.graphics.glutils.VertexArray;
+import com.badlogic.gdx.graphics.glutils.VertexBufferObject;
 import com.badlogic.gdx.graphics.glutils.VertexData;
 import com.badlogic.gdx.utils.BufferUtils;
 import org.teavm.libgdx.plugin.Annotations.Replace;
 
-@Replace(VertexArray.class)
-public class VertexArrayEmulator implements VertexData {
+import java.nio.FloatBuffer;
+
+@Replace(VertexBufferObject.class)
+public class VertexBufferObjectEmulator implements VertexData {
     final VertexAttributes attributes;
     final FloatBuffer buffer;
     int bufferHandle;
@@ -22,7 +23,7 @@ public class VertexArrayEmulator implements VertexData {
     boolean isDirty = false;
     boolean isBound = false;
 
-    public VertexArrayEmulator (int numVertices, VertexAttribute... attributes) {
+    public VertexBufferObjectEmulator(int numVertices, VertexAttribute... attributes) {
         this(numVertices, new VertexAttributes(attributes));
     }
 
@@ -30,7 +31,7 @@ public class VertexArrayEmulator implements VertexData {
      *
      * @param numVertices the maximum number of vertices
      * @param attributes the {@link VertexAttributes} */
-    public VertexArrayEmulator(int numVertices, VertexAttributes attributes) {
+    public VertexBufferObjectEmulator(int numVertices, VertexAttributes attributes) {
         this(false, numVertices, attributes);
     }
 
@@ -44,7 +45,7 @@ public class VertexArrayEmulator implements VertexData {
      * @param attributes
      *            the {@link VertexAttribute}s.
      */
-    public VertexArrayEmulator(boolean isStatic, int numVertices, VertexAttribute... attributes) {
+    public VertexBufferObjectEmulator(boolean isStatic, int numVertices, VertexAttribute... attributes) {
         this(isStatic, numVertices, new VertexAttributes(attributes));
     }
 
@@ -58,7 +59,7 @@ public class VertexArrayEmulator implements VertexData {
      * @param attributes
      *            the {@link VertexAttributes}.
      */
-    public VertexArrayEmulator(boolean isStatic, int numVertices, VertexAttributes attributes) {
+    public VertexBufferObjectEmulator(boolean isStatic, int numVertices, VertexAttributes attributes) {
         this.isStatic = isStatic;
         this.attributes = attributes;
 

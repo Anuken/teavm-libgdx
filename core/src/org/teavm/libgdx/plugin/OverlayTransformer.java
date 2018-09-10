@@ -2,53 +2,78 @@ package org.teavm.libgdx.plugin;
 
 import com.badlogic.gdx.Files.FileType;
 import com.badlogic.gdx.files.FileHandle;
-import com.badlogic.gdx.graphics.Pixmap;
 import com.badlogic.gdx.graphics.Pixmap.Format;
 import com.badlogic.gdx.graphics.TextureData;
-import com.badlogic.gdx.graphics.glutils.IndexArray;
-import com.badlogic.gdx.graphics.glutils.IndexBufferObject;
-import com.badlogic.gdx.graphics.glutils.VertexArray;
-import com.badlogic.gdx.graphics.glutils.VertexBufferObject;
-import com.badlogic.gdx.math.Matrix4;
-import com.badlogic.gdx.utils.BufferUtils;
+
 import java.io.BufferedInputStream;
 import java.io.BufferedReader;
 import java.io.InputStream;
 import java.io.Reader;
+import java.lang.reflect.Method;
 import java.nio.Buffer;
 import java.nio.ByteBuffer;
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
-import org.teavm.common.Mapper;
+import java.util.*;
+
+import org.reflections.Reflections;
 import org.teavm.diagnostics.Diagnostics;
 import org.teavm.libgdx.emu.*;
+import org.teavm.libgdx.plugin.Annotations.Emulate;
+import org.teavm.libgdx.plugin.Annotations.Replace;
 import org.teavm.model.*;
 import org.teavm.model.instructions.*;
 import org.teavm.model.util.ModelUtils;
 import org.teavm.parsing.ClassRefsRenamer;
 
 public class OverlayTransformer implements ClassHolderTransformer {
+    private HashMap<String, Class<?>> emulations = new HashMap<>();
+    private HashMap<String, Class<?>> replacements = new HashMap<>();
+
+    public OverlayTransformer(){
+        Reflections reflections = new Reflections("org.teavm.libgdx.emu");
+
+        Set<Class<?>> annotated = reflections.getTypesAnnotatedWith(Emulate.class);
+        for(Class<?> type : annotated){
+            Emulate em = type.getAnnotation(Emulate.class);
+            Class<?> toEmulate = em.value();
+            emulations.put(type.getName(), toEmulate);
+        }
+
+        annotated = reflections.getTypesAnnotatedWith(Replace.class);
+        for(Class<?> type : annotated){
+            Replace em = type.getAnnotation(Replace.class);
+            Class<?> toEmulate = em.value();
+            replacements.put(type.getName(), toEmulate);
+        }
+    }
+
     @Override
     public void transformClass(ClassHolder cls, ClassReaderSource innerSource, Diagnostics diagnostics) {
-        if (cls.getName().equals(BufferUtils.class.getName())) {
-            transformBufferUtils(cls, innerSource);
-        } else if (cls.getName().equals(TextureData.Factory.class.getName())) {
-            transformTextureData(cls, innerSource);
-        } else if (cls.getName().equals(FileHandle.class.getName())) {
-            transformFileHandle(cls);
-        } else if (cls.getName().equals(Pixmap.class.getName())) {
-            replaceClass(cls, innerSource.get(PixmapEmulator.class.getName()));
-        } else if (cls.getName().equals(Matrix4.class.getName())) {
-            transformMatrix(cls, innerSource);
-        } else if (cls.getName().equals(VertexArray.class.getName()) ||
-                cls.getName().equals(VertexBufferObject.class.getName())) {
-            replaceClass(cls, innerSource.get(VertexArrayEmulator.class.getName()));
-        } else if (cls.getName().equals(IndexArray.class.getName()) ||
-                cls.getName().equals(IndexBufferObject.class.getName())) {
-            replaceClass(cls, innerSource.get(IndexArrayEmulator.class.getName()));
+        if(emulations.containsKey(cls.getName())){
+            Class<?> emulated = emulations.get(cls.getName());
+            List<MethodDescriptor> descList = new ArrayList<>();
+            for(Method method : emulated.getDeclaredMethods()){
+                descList.add(new MethodDescriptor(method.getName(), method.getParameterTypes()));
+            }
+            replaceMethods(cls, emulated, innerSource, descList);
+        }else if(replacements.containsKey(cls.getName())){
+            Class<?> emulated = replacements.get(cls.getName());
+            List<MethodDescriptor> descList = new ArrayList<>();
+            for(Method method : emulated.getDeclaredMethods()){
+                descList.add(new MethodDescriptor(method.getName(), method.getParameterTypes()));
+            }
+            replaceClass(cls, innerSource.get(emulated.getName()));
         }
+
+        //if (cls.getName().equals(BufferUtils.class.getName())) {
+        //    transformBufferUtils(cls, innerSource);
+        //} else if (cls.getName().equals(TextureData.Factory.class.getName())) {
+        //    transformTextureData(cls, innerSource);
+        /*} else *///if (cls.getName().equals(FileHandle.class.getName())) {
+           // transformFileHandle(cls);
+        //} else if (cls.getName().equals(Pixmap.class.getName())) {
+        //    replaceClass(cls, innerSource.get(PixmapEmulator.class.getName()));
+        //} else if (cls.getName().equals(Matrix4.class.getName())) {
+        //    transformMatrix(cls, innerSource);
     }
 
     private void transformBufferUtils(ClassHolder cls, ClassReaderSource innerSource) {
@@ -56,6 +81,7 @@ public class OverlayTransformer implements ClassHolderTransformer {
         descList.add(new MethodDescriptor("freeMemory", ByteBuffer.class, void.class));
         descList.add(new MethodDescriptor("newDisposableByteBuffer", int.class, ByteBuffer.class));
         descList.add(new MethodDescriptor("copyJni", float[].class, Buffer.class, int.class, int.class, void.class));
+        descList.add(new MethodDescriptor("copyJni", float[].class, int.class, Buffer.class, int.class, int.class, void.class));
         replaceMethods(cls, BufferUtilsEmulator.class, innerSource, descList);
     }
 

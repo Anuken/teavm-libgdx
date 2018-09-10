@@ -17,6 +17,7 @@ ext {
 	gdxVersion = '1.9.8'
     teavmVersion = '0.6.0-dev-529'
     jacksonVersion = '2.5.0'
+    reflectionsVersion = '0.9.11'
 }
 
 sourceSets {
@@ -46,6 +47,7 @@ dependencies {
     compile "org.teavm:teavm-jso:$teavmVersion"
     compile "org.teavm:teavm-jso-apis:$teavmVersion"
     compile "org.teavm:teavm-jso-impl:$teavmVersion"
+    compile "org.reflections:reflections:$reflectionsVersion"
     compile "com.fasterxml.jackson.core:jackson-core:$jacksonVersion"
     compile "com.fasterxml.jackson.core:jackson-annotations:$jacksonVersion"
     compile "com.fasterxml.jackson.core:jackson-databind:$jacksonVersion"

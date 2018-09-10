@@ -20,11 +20,14 @@ import com.badlogic.gdx.graphics.Pixmap;
 import com.badlogic.gdx.graphics.Pixmap.Format;
 import com.badlogic.gdx.graphics.TextureData;
 import com.badlogic.gdx.graphics.glutils.FileTextureData;
+import org.teavm.libgdx.plugin.Annotations.Emulate;
 
 /**
  *
  * @author Alexey Andreev
  */
+@Emulate(TextureData.Factory.class)
+@SuppressWarnings("unused")
 public class TextureDataEmulator {
     public static TextureData loadFromFile(FileHandle file, Format format, boolean useMipMaps) {
         if (file == null) {
