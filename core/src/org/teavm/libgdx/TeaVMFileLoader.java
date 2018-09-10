@@ -1,5 +1,6 @@
 package org.teavm.libgdx;
 
+import org.teavm.classlib.java.io.TConsole;
 import org.teavm.jso.ajax.ReadyStateChangeHandler;
 import org.teavm.jso.ajax.XMLHttpRequest;
 import org.teavm.jso.browser.Window;
@@ -86,6 +87,7 @@ public class TeaVMFileLoader {
             entry.directory = fileDesc.isDirectory();
             parent.childEntries.put(name, entry);
             final String entryPath = fullPath + "/" + name;
+            new TeaVMApplicationLogger().error("Loading:", entryPath);
             if (entry.directory) {
                 initEntry(entry, fileDesc.getChildFiles(), entryPath, tasks);
             } else {

@@ -73,7 +73,11 @@ public class FileHandleEmulator {
     /** Returns a reader for reading this file as characters.
      * @throw GdxRuntimeException if the file handle represents a directory, doesn't exist, or could not be read. */
     public Reader reader (String charset) {
-        throw new GdxRuntimeException("Stub");
+        try{
+            return new InputStreamReader(read(), charset);
+        }catch(UnsupportedEncodingException e){
+            throw new RuntimeException(e);
+        }
     }
 
     /** Returns a buffered reader for reading this file as characters.
@@ -85,7 +89,7 @@ public class FileHandleEmulator {
     /** Returns a buffered reader for reading this file as characters.
      * @throw GdxRuntimeException if the file handle represents a directory, doesn't exist, or could not be read. */
     public BufferedReader reader (int bufferSize, String charset) {
-        throw new GdxRuntimeException("Stub");
+        return new BufferedReader(reader());
     }
 
     /** Reads the entire file into a string using the platform's default charset.

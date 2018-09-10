@@ -21,6 +21,8 @@ import com.fasterxml.jackson.databind.SequenceWriter;
 import java.io.*;
 import java.net.URISyntaxException;
 import java.net.URL;
+import java.nio.file.*;
+import java.nio.file.attribute.FileAttribute;
 import java.util.Arrays;
 import java.util.HashSet;
 import java.util.Set;
@@ -49,26 +51,42 @@ public class AssetsCopier implements RendererListener {
     };
 
     @Override
-    public void begin(RenderingManager context, BuildTarget buildTarget) throws IOException {
+    public void begin(RenderingManager context, BuildTarget buildTarget){
         this.context = context;
     }
 
     @Override
     public void complete() throws IOException {
-        String dirName = context.getProperties().getProperty("teavm.libgdx.genAssetsDirectory", "");
+        String dirName = context.getProperties().getProperty("teavm.libgdx.genAssetsDirectory", "html/webapp/assets");
         if (!dirName.isEmpty()) {
             File dir = new File(dirName);
             dir.mkdirs();
             copyClasspathAssets(dir);
+            copyAssets();
             createFSDescriptor(dir);
         } else {
             createFSDescriptor(null);
         }
     }
 
+    private void copyAssets() throws IOException{
+        Path path = Paths.get("core/assets/");
+
+        Files.walk(path).forEach(sr -> {
+            Path dest = Paths.get("html/webapp/assets/").resolve(path.relativize(sr));
+            if(Files.isDirectory(sr) || Files.isDirectory(dest)) return;
+            System.out.println("Copy " + sr + " -> " + dest);
+            try{
+                if(!Files.exists(dest)) Files.createDirectories(dest);
+                Files.copy(sr, dest, StandardCopyOption.REPLACE_EXISTING);
+            }catch(IOException e){
+                throw new RuntimeException(e);
+            }
+        });
+    }
+
     private void copyClasspathAssets(File dir) throws IOException {
-        Set<String> resourcesToCopy = new HashSet<>();
-        resourcesToCopy.addAll(Arrays.asList(classpathAssets));
+        Set<String> resourcesToCopy = new HashSet<>(Arrays.asList(classpathAssets));
 
         for (String resourceToCopy : resourcesToCopy) {
             File resource = new File(dir, resourceToCopy);
@@ -96,7 +114,8 @@ public class AssetsCopier implements RendererListener {
     }
 
     private void createFSDescriptor(File dir) throws IOException {
-        String path = context.getProperties().getProperty("teavm.libgdx.fsJsonPath", "");
+        System.out.println("Creating filesystem...");
+        String path = context.getProperties().getProperty("teavm.libgdx.fsJsonPath", "html/webapp/filesystem.json");
         if (path.isEmpty()) {
             return;
         }
@@ -104,7 +123,7 @@ public class AssetsCopier implements RendererListener {
             processFile(dir, rootFileDescriptor);
         }
 
-        String dirName = context.getProperties().getProperty("teavm.libgdx.warAssetsDirectory", "");
+        String dirName = context.getProperties().getProperty("teavm.libgdx.warAssetsDirectory", "core/assets/");
         if (!dirName.isEmpty()) {
             dir = new File(dirName);
             processFile(dir, rootFileDescriptor);
@@ -120,6 +139,7 @@ public class AssetsCopier implements RendererListener {
         desc.setDirectory(file.isDirectory());
         if (file.isDirectory()) {
             for (File child : file.listFiles()) {
+                System.out.println("Copying " + child);
                 FileDescriptor childDesc = new  FileDescriptor();
                 processFile(child, childDesc);
                 desc.getChildFiles().add(childDesc);
