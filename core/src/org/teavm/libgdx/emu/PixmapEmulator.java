@@ -16,17 +16,15 @@
 package org.teavm.libgdx.emu;
 
 import com.badlogic.gdx.files.FileHandle;
-import com.badlogic.gdx.graphics.*;
+import com.badlogic.gdx.graphics.Color;
+import com.badlogic.gdx.graphics.GL20;
+import com.badlogic.gdx.graphics.Pixmap;
 import com.badlogic.gdx.graphics.Pixmap.Blending;
 import com.badlogic.gdx.graphics.Pixmap.Filter;
 import com.badlogic.gdx.graphics.Pixmap.Format;
-import com.badlogic.gdx.graphics.glutils.GLOnlyTextureData;
 import com.badlogic.gdx.utils.Disposable;
 import com.badlogic.gdx.utils.GdxRuntimeException;
-import java.nio.ByteBuffer;
-import java.nio.IntBuffer;
-import java.util.HashMap;
-import java.util.Map;
+import org.teavm.backend.javascript.spi.GeneratedBy;
 import org.teavm.jso.browser.Window;
 import org.teavm.jso.canvas.CanvasRenderingContext2D;
 import org.teavm.jso.dom.html.HTMLCanvasElement;
@@ -34,9 +32,13 @@ import org.teavm.jso.dom.html.HTMLDocument;
 import org.teavm.jso.dom.html.HTMLImageElement;
 import org.teavm.jso.typedarrays.ArrayBuffer;
 import org.teavm.jso.typedarrays.Uint8ClampedArray;
-import org.teavm.backend.javascript.spi.GeneratedBy;
 import org.teavm.libgdx.TeaVMFileHandle;
 import org.teavm.libgdx.plugin.Annotations.Replace;
+
+import java.nio.ByteBuffer;
+import java.nio.IntBuffer;
+import java.util.HashMap;
+import java.util.Map;
 
 /**
  *
