@@ -1,28 +1,18 @@
 package org.teavm.libgdx.plugin;
 
-import com.badlogic.gdx.Files.FileType;
-import com.badlogic.gdx.files.FileHandle;
-import com.badlogic.gdx.graphics.Pixmap.Format;
-import com.badlogic.gdx.graphics.TextureData;
-
-import java.io.BufferedInputStream;
-import java.io.BufferedReader;
-import java.io.InputStream;
-import java.io.Reader;
-import java.lang.reflect.Method;
-import java.nio.Buffer;
-import java.nio.ByteBuffer;
-import java.util.*;
-
 import org.reflections.Reflections;
 import org.teavm.diagnostics.Diagnostics;
-import org.teavm.libgdx.emu.*;
 import org.teavm.libgdx.plugin.Annotations.Emulate;
 import org.teavm.libgdx.plugin.Annotations.Replace;
 import org.teavm.model.*;
-import org.teavm.model.instructions.*;
 import org.teavm.model.util.ModelUtils;
 import org.teavm.parsing.ClassRefsRenamer;
+
+import java.lang.reflect.Method;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Set;
 
 public class OverlayTransformer implements ClassHolderTransformer {
     private HashMap<String, Class<?>> emulations = new HashMap<>();

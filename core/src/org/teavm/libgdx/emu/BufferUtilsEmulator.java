@@ -15,13 +15,13 @@
  */
 package org.teavm.libgdx.emu;
 
-import java.nio.Buffer;
-import java.nio.ByteBuffer;
-import java.nio.FloatBuffer;
-
 import com.badlogic.gdx.utils.BufferUtils;
 import com.badlogic.gdx.utils.GdxRuntimeException;
 import org.teavm.libgdx.plugin.Annotations.Emulate;
+
+import java.nio.Buffer;
+import java.nio.ByteBuffer;
+import java.nio.FloatBuffer;
 
 /**
  *
@@ -67,6 +67,7 @@ public class BufferUtilsEmulator {
         } else {
             throw new GdxRuntimeException("Target buffer of type " + dst.getClass().getName() + " is not supported");
         }
-        floatDst.put(src, offset + srcOffset, numFloats);
+
+        floatDst.put(src, offset, numFloats);
     }
 }

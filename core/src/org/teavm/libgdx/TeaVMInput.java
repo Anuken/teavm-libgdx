@@ -1,14 +1,16 @@
 package org.teavm.libgdx;
 
-import org.teavm.jso.dom.events.*;
-import org.teavm.jso.dom.html.HTMLCanvasElement;
-import org.teavm.jso.dom.html.HTMLDocument;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input;
 import com.badlogic.gdx.InputProcessor;
-import com.badlogic.gdx.graphics.Pixmap;
 import com.badlogic.gdx.utils.IntMap;
 import com.badlogic.gdx.utils.IntSet;
+import org.teavm.jso.dom.events.Event;
+import org.teavm.jso.dom.events.EventListener;
+import org.teavm.jso.dom.events.KeyboardEvent;
+import org.teavm.jso.dom.events.MouseEvent;
+import org.teavm.jso.dom.html.HTMLCanvasElement;
+import org.teavm.jso.dom.html.HTMLDocument;
 
 /**
  *
@@ -328,6 +330,7 @@ public class TeaVMInput implements Input, EventListener {
 
     /** Kindly borrowed from PlayN. **/
     protected int getRelativeX(MouseEvent e, HTMLCanvasElement target) {
+        System.out.println("left " + target.getOffsetHeight() + " " + target.getAbsoluteLeft() + " " + target.getScrollLeft());
         //float xScaleRatio = target.getWidth() * 1f / target.getClientWidth();
         return e.getClientX();
         //Math.round(xScaleRatio *
@@ -337,6 +340,7 @@ public class TeaVMInput implements Input, EventListener {
 
     /** Kindly borrowed from PlayN. **/
     protected int getRelativeY(MouseEvent e, HTMLCanvasElement target) {
+        System.out.println("right " + target.getAbsoluteTop());
         //float yScaleRatio = target.getHeight() * 1f / target.getClientHeight();
         return e.getClientY();
         //Math.round(yScaleRatio *
@@ -488,7 +492,6 @@ public class TeaVMInput implements Input, EventListener {
         }
 
         if (e.getType().equals("keyup") && hasFocus) {
-            // System.out.println("keyup");
             KeyboardEvent keyEvent = (KeyboardEvent)e;
             int code = keyForCode(keyEvent.getKeyCode());
             if (pressedKeys[code]) {
